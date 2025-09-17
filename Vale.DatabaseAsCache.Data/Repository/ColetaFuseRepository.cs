@@ -193,7 +193,15 @@ VALUES
             }
             catch (SqlException ex)
             {
-                _log.ErrorFormat("Erro ao executar inserção: {0}", ex.ToString().Replace(Environment.NewLine, string.Empty));
+                if (ex.Number == 2627 || ex.Number == 2601)
+                {
+                    _log.WarnFormat("Registro duplicado identificado durante inserção na tabela {0}. A operação será considerada concluída.", _tableName);
+                    numRowsInserted = 1;
+                }
+                else
+                {
+                    _log.ErrorFormat("Erro ao executar inserção: {0}", ex.ToString().Replace(Environment.NewLine, string.Empty));
+                }
             }
             catch (TransactionAbortedException ex)
             {
